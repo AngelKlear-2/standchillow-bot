@@ -17,6 +17,16 @@ public static class EnemyScanner
             return 0;
 
         byte localTeam = mem.Read<byte>(localPc + off.PlayerController_Team);
+
+        // klass of MovementController, taken from the local player (known valid).
+        // candidate's movement object must share it, this rejects stray klass-pointer matches.
+        long localMc = mem.ReadPtr(localPc + off.PlayerController_Movement);
+        if (localMc == 0)
+            return 0;
+        long mcKlass = mem.ReadPtr(localMc);
+        if (mcKlass == 0)
+            return 0;
+
         byte[] buf = new byte[ChunkSize + 8];
 
         foreach (var (start, size) in mem.EnumerateReadableRegions())
@@ -41,7 +51,7 @@ public static class EnemyScanner
                         continue;
 
                     long mc = mem.ReadPtr(candidate + off.PlayerController_Movement);
-                    if (mc == 0)
+                    if (mc == 0 || mem.ReadPtr(mc) != mcKlass)
                         continue;
 
                     return candidate;
