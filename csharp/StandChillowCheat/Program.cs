@@ -23,6 +23,7 @@ internal static class Program
         }
 
         using var mem = new ProcessMemory(proc.Id);
+        mem.ResolveModuleBase(off.ModuleName);
         var bot = new BotController(mem);
 
         var listener = new TcpListener(IPAddress.Loopback, Port);

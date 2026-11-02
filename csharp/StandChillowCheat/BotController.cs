@@ -10,7 +10,29 @@ public sealed class BotController
     private readonly Random _rng = new();
     private volatile bool _stopped;
 
+    private long _playerManager;
+
     public BotController(ProcessMemory mem) => _mem = mem;
+
+    // lazy: the PlayerManager object only exists once a match is loaded
+    private long PlayerManagerPtr
+    {
+        get
+        {
+            if (_playerManager == 0)
+                _playerManager = MemoryScanner.FindPlayerManager(_mem);
+            return _playerManager;
+        }
+    }
+
+    private long LocalPlayerPtr
+    {
+        get
+        {
+            long pm = PlayerManagerPtr;
+            return pm == 0 ? 0 : _mem.ReadPtr(pm + off.PlayerManager_LocalPlayer);
+        }
+    }
 
     public object GetGameState()
     {
