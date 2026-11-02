@@ -43,7 +43,8 @@ internal static class Program
         using var owned = client;
         using var stream = client.GetStream();
         using var reader = new StreamReader(stream, Encoding.UTF8);
-        using var writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
+        // UTF8Encoding(false): Encoding.UTF8 writes a BOM that breaks the Python json parser
+        using var writer = new StreamWriter(stream, new UTF8Encoding(false)) { AutoFlush = true };
 
         while (await reader.ReadLineAsync() is { } line)
         {
