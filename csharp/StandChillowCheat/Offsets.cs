@@ -9,10 +9,14 @@ public static class off
     public const string ModuleName = "GameAssembly.dll";
     public const string ProcessName = "StandChillow";  // FILL: confirm exe name in task manager
 
-    // ---- static RVAs (need script.json / TypeInfo or a signature) ----
-    public const long PlayerManagerTypeInfo = 0; // FILL: RVA of PlayerManager_TypeInfo, then read the static instance
-    public const long LocalPlayer           = 0; // FILL: derive from PlayerManager static cqac -> cfog (backing 0x40)
-    public const long ViewMatrix            = 0; // FILL: camera matrix, derive from PlayerMainCamera -> Camera
+    // ---- TypeInfo RVAs (script.json ScriptMetadata, RVA from GameAssembly base) ----
+    public const long PlayerManagerTypeInfo    = 0x51E9610; // Chillow.StandChillow.Player.PlayerManager_TypeInfo
+    public const long PlayerControllerTypeInfo = 0x51E8A30; // Chillow.StandChillow.Player.PlayerController_TypeInfo
+    public const long PlayerMainCameraTypeInfo = 0x51E94F8; // Chillow.StandChillow.Player.PlayerMainCamera_TypeInfo
+
+    // ---- still FILL: LazySingleton<PlayerManager> static instance has no resolved address in script.json ----
+    public const long LocalPlayer = 0; // FILL: static cqac of LazySingleton<PlayerManager>; use heap scan on PlayerManager klass or a signature
+    public const long ViewMatrix  = 0; // FILL: camera matrix, derive from PlayerMainCamera static cfnv (offset 0x0) -> Camera
 
     // ---- PlayerManager (class PlayerManager : LazySingleton<PlayerManager>) ----
     public const int PlayerManager_PlayersDict = 0x28; // Dictionary<int, PlayerController> cfod
