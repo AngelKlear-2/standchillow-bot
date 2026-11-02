@@ -8,6 +8,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyName>StandChillowCheat</AssemblyName>
     <RootNamespace>StandChillowCheat</RootNamespace>
+    <!-- CS8981: lowercase type name `off` is intentional, the offsets block is named as requested -->
+    <NoWarn>$(NoWarn);CS8981</NoWarn>
   </PropertyGroup>
 
 </Project>
