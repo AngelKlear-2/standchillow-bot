@@ -54,7 +54,9 @@ public sealed class BotController
                 mc_vec_E4 = ReadMovementVec3(0xE4),
                 mc_vec_F0 = ReadMovementVec3(0xF0),
                 aim_floatA = ReadAimFloat(off.AimController_FloatA),
-                aim_floatB = ReadAimFloat(off.AimController_FloatB)
+                aim_floatB = ReadAimFloat(off.AimController_FloatB),
+                aim_vec_B8 = ReadAimVec3(0xB8),
+                aim_vec_120 = ReadAimVec3(0x120)
             }
         };
     }
@@ -137,6 +139,17 @@ public sealed class BotController
         long pc = LocalPlayerPtr;
         if (pc == 0) return null;
         Vector3 v = _mem.Read<Vector3>(pc + offset);
+        return new { x = v.X, y = v.Y, z = v.Z };
+    }
+
+    // experiment: AimController Vector3 candidates (_headDirectiveAngles 0xB8, cgjl 0x120)
+    private object ReadAimVec3(int offset)
+    {
+        long pc = LocalPlayerPtr;
+        if (pc == 0) return null;
+        long ac = _mem.ReadPtr(pc + off.PlayerController_Aim);
+        if (ac == 0) return null;
+        Vector3 v = _mem.Read<Vector3>(ac + offset);
         return new { x = v.X, y = v.Y, z = v.Z };
     }
 
