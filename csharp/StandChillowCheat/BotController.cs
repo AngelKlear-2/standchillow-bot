@@ -43,7 +43,13 @@ public sealed class BotController
             ok = true,
             local = new { x = local.X, y = local.Y, z = local.Z },
             enemy = new { x = enemy.X, y = enemy.Y, z = enemy.Z },
-            stopped = _stopped
+            stopped = _stopped,
+            debug = new
+            {
+                module_base = _mem.ModuleBase.ToString("X"),
+                player_manager = PlayerManagerPtr.ToString("X"),
+                local_player = LocalPlayerPtr.ToString("X")
+            }
         };
     }
 
