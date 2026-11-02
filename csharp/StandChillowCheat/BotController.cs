@@ -117,7 +117,24 @@ public sealed class BotController
         if (mc == 0) return Vector3.Zero;
         return _mem.Read<Vector3>(mc + off.MovementController_Position);
     }
-    private Vector3 ReadEnemyPosition() => Vector3.Zero; // FILL: walk off.EntityList, pick team != local
+    private long _enemy;
+
+    // enemy world position, same MovementController path as the local player
+    private Vector3 ReadEnemyPosition()
+    {
+        if (_enemy == 0)
+            _enemy = EnemyScanner.FindEnemyController(_mem, LocalPlayerPtr);
+        if (_enemy == 0)
+            return Vector3.Zero;
+
+        long mc = _mem.ReadPtr(_enemy + off.PlayerController_Movement);
+        if (mc == 0)
+        {
+            _enemy = 0; // stale object, rescan next call
+            return Vector3.Zero;
+        }
+        return _mem.Read<Vector3>(mc + off.MovementController_Position);
+    }
     private Vector3 ReadEnemyBone(int boneIndex) => Vector3.Zero; // FILL: off.PlayerBones + boneIndex
     private Vector3 PickBone(Vector3 bone) => bone;
     private Vector2 ReadViewAngles() => Vector2.Zero; // FILL: derive from off.ViewMatrix
