@@ -52,7 +52,9 @@ public sealed class BotController
                 mc_vec_CC = ReadMovementVec3(0xCC),
                 mc_vec_D8 = ReadMovementVec3(0xD8),
                 mc_vec_E4 = ReadMovementVec3(0xE4),
-                mc_vec_F0 = ReadMovementVec3(0xF0)
+                mc_vec_F0 = ReadMovementVec3(0xF0),
+                aim_floatA = ReadAimFloat(off.AimController_FloatA),
+                aim_floatB = ReadAimFloat(off.AimController_FloatB)
             }
         };
     }
@@ -136,6 +138,16 @@ public sealed class BotController
         if (pc == 0) return null;
         Vector3 v = _mem.Read<Vector3>(pc + offset);
         return new { x = v.X, y = v.Y, z = v.Z };
+    }
+
+    // experiment: AimController float candidates (view angles), read from the local player
+    private object ReadAimFloat(int offset)
+    {
+        long pc = LocalPlayerPtr;
+        if (pc == 0) return null;
+        long ac = _mem.ReadPtr(pc + off.PlayerController_Aim);
+        if (ac == 0) return null;
+        return _mem.Read<float>(ac + offset);
     }
 
     // experiment: PlayerController.<cflz>k__BackingField (MovementController, 0xE8) -> Vector3 fields

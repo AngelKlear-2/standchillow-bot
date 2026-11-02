@@ -31,6 +31,11 @@ public static class off
     public const int PlayerController_Movement = 0xE8; // MovementController <cflz>k__BackingField
     public const int MovementController_Position = 0xCC; // Vector3 world position
 
+    // ---- PlayerController -> AimController (view angles, candidates, verify by moving the mouse) ----
+    public const int PlayerController_Aim = 0xD0;   // AimController <cflw>k__BackingField
+    public const int AimController_FloatA = 0x1A8;  // float <cgkc>k__BackingField (public prop)
+    public const int AimController_FloatB = 0x1AC;  // float <cgkd>k__BackingField (public prop)
+
     // ---- BipedMap (MonoBehaviour, Transform fields) ----
     public const int BipedMap_Head   = 0x20;
     public const int BipedMap_Neck   = 0x28;
