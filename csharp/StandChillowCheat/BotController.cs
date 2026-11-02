@@ -48,7 +48,9 @@ public sealed class BotController
             {
                 module_base = _mem.ModuleBase.ToString("X"),
                 player_manager = PlayerManagerPtr.ToString("X"),
-                local_player = LocalPlayerPtr.ToString("X")
+                local_player = LocalPlayerPtr.ToString("X"),
+                pc_vec_6C = ReadLocalVec3(0x6C),
+                pc_vec_BC = ReadLocalVec3(0xBC)
             }
         };
     }
@@ -84,7 +86,16 @@ public sealed class BotController
         return new { ok = true, action = "stop_bot" };
     }
 
-    private Vector3 ReadLocalPosition() => Vector3.Zero; // FILL: resolve local player via off.LocalPlayer
+    // experiment: raw Vector3 read from PlayerController managed fields, to find a position-like value
+    private object ReadLocalVec3(int offset)
+    {
+        long pc = LocalPlayerPtr;
+        if (pc == 0) return null;
+        Vector3 v = _mem.Read<Vector3>(pc + offset);
+        return new { x = v.X, y = v.Y, z = v.Z };
+    }
+
+    private Vector3 ReadLocalPosition() => Vector3.Zero; // FILL: native transform read, layout not verified yet
     private Vector3 ReadEnemyPosition() => Vector3.Zero; // FILL: walk off.EntityList, pick team != local
     private Vector3 ReadEnemyBone(int boneIndex) => Vector3.Zero; // FILL: off.PlayerBones + boneIndex
     private Vector3 PickBone(Vector3 bone) => bone;
