@@ -27,6 +27,10 @@ public static class off
     public const int PlayerController_RootTransform  = 0xA0; // Transform cflq
     public const int PlayerController_Team           = 0x79; // Team <cfll>k__BackingField (byte: None=0, Tr=1, Ct=2, Spectator=3)
 
+    // ---- PlayerController -> MovementController (confirmed by walking: CC/D8/E4 track world x/z, y ~0.70) ----
+    public const int PlayerController_Movement = 0xE8; // MovementController <cflz>k__BackingField
+    public const int MovementController_Position = 0xCC; // Vector3 world position
+
     // ---- BipedMap (MonoBehaviour, Transform fields) ----
     public const int BipedMap_Head   = 0x20;
     public const int BipedMap_Neck   = 0x28;

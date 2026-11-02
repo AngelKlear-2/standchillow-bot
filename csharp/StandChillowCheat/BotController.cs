@@ -108,7 +108,15 @@ public sealed class BotController
         return new { x = v.X, y = v.Y, z = v.Z };
     }
 
-    private Vector3 ReadLocalPosition() => Vector3.Zero; // FILL: native transform read, layout not verified yet
+    // local player world position: PlayerController -> MovementController -> Vector3 at 0xCC
+    private Vector3 ReadLocalPosition()
+    {
+        long pc = LocalPlayerPtr;
+        if (pc == 0) return Vector3.Zero;
+        long mc = _mem.ReadPtr(pc + off.PlayerController_Movement);
+        if (mc == 0) return Vector3.Zero;
+        return _mem.Read<Vector3>(mc + off.MovementController_Position);
+    }
     private Vector3 ReadEnemyPosition() => Vector3.Zero; // FILL: walk off.EntityList, pick team != local
     private Vector3 ReadEnemyBone(int boneIndex) => Vector3.Zero; // FILL: off.PlayerBones + boneIndex
     private Vector3 PickBone(Vector3 bone) => bone;
