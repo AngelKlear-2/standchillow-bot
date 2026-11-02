@@ -49,8 +49,10 @@ public sealed class BotController
                 module_base = _mem.ModuleBase.ToString("X"),
                 player_manager = PlayerManagerPtr.ToString("X"),
                 local_player = LocalPlayerPtr.ToString("X"),
-                pc_vec_6C = ReadLocalVec3(0x6C),
-                pc_vec_BC = ReadLocalVec3(0xBC)
+                mc_vec_CC = ReadMovementVec3(0xCC),
+                mc_vec_D8 = ReadMovementVec3(0xD8),
+                mc_vec_E4 = ReadMovementVec3(0xE4),
+                mc_vec_F0 = ReadMovementVec3(0xF0)
             }
         };
     }
@@ -92,6 +94,17 @@ public sealed class BotController
         long pc = LocalPlayerPtr;
         if (pc == 0) return null;
         Vector3 v = _mem.Read<Vector3>(pc + offset);
+        return new { x = v.X, y = v.Y, z = v.Z };
+    }
+
+    // experiment: PlayerController.<cflz>k__BackingField (MovementController, 0xE8) -> Vector3 fields
+    private object ReadMovementVec3(int offset)
+    {
+        long pc = LocalPlayerPtr;
+        if (pc == 0) return null;
+        long mc = _mem.ReadPtr(pc + 0xE8);
+        if (mc == 0) return null;
+        Vector3 v = _mem.Read<Vector3>(mc + offset);
         return new { x = v.X, y = v.Y, z = v.Z };
     }
 
