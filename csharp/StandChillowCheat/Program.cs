@@ -32,13 +32,15 @@ internal static class Program
 
         while (true)
         {
-            using var client = await listener.AcceptTcpClientAsync();
+            // client is owned by Serve, do not dispose it here
+            TcpClient client = await listener.AcceptTcpClientAsync();
             _ = Task.Run(() => Serve(client, bot));
         }
     }
 
     private static async Task Serve(TcpClient client, BotController bot)
     {
+        using var owned = client;
         using var stream = client.GetStream();
         using var reader = new StreamReader(stream, Encoding.UTF8);
         using var writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
