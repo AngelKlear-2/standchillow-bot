@@ -57,11 +57,46 @@ public sealed class BotController
         };
     }
 
+    private CancellationTokenSource? _walkCts;
+    private readonly object _walkLock = new();
+
+    // starts a background loop: pick a key (W weighted), hold 400-1200 ms, release, short pause
     public object WalkRandomly()
     {
-        _stopped = false;
-        // FILL: send movement input (WASD via SendInput) once the input block is confirmed
-        return new { ok = true, action = "walk_randomly" };
+        lock (_walkLock)
+        {
+            _stopped = false;
+            if (_walkCts is not null)
+                return new { ok = true, action = "walk_randomly", already_running = true };
+
+            var cts = new CancellationTokenSource();
+            _walkCts = cts;
+            _ = Task.Run(() => WalkLoop(cts.Token));
+            return new { ok = true, action = "walk_randomly", already_running = false };
+        }
+    }
+
+    private async Task WalkLoop(CancellationToken ct)
+    {
+        ushort[] keys = { InputSender.ScanW, InputSender.ScanW, InputSender.ScanA, InputSender.ScanD, InputSender.ScanS };
+        try
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                ushort key = keys[_rng.Next(keys.Length)];
+                InputSender.KeyDown(key);
+                await Task.Delay(_rng.Next(400, 1201), ct);
+                InputSender.KeyUp(key);
+                await Task.Delay(100, ct);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        finally
+        {
+            InputSender.ReleaseMovement();
+        }
     }
 
     public async Task<object> EngageEnemyAsync()
@@ -84,7 +119,13 @@ public sealed class BotController
 
     public object Stop()
     {
-        _stopped = true;
+        lock (_walkLock)
+        {
+            _stopped = true;
+            _walkCts?.Cancel();
+            _walkCts = null;
+        }
+        InputSender.ReleaseMovement();
         return new { ok = true, action = "stop_bot" };
     }
 
